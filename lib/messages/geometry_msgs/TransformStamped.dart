@@ -8,7 +8,7 @@ class GeometryMsgsTransformStamped extends RosMessage {
   final RosString _child_frame_id = RosString();
   final GeometryMsgsTransform transform = GeometryMsgsTransform();
 
-  String get child_frame_id => _child_frame_id.val;
+  String? get child_frame_id => _child_frame_id.val;
   set child_frame_id(value) {
     _child_frame_id.val = value;
   }

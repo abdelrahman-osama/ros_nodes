@@ -11,14 +11,14 @@ class NavMsgsMapMetaData extends RosMessage {
   final _height = RosUint32();
   var origin = GeometryMsgsPose();
 
-  double get resolution => _resolution.val;
-  set resolution(double val) => _resolution.val = val;
+  double? get resolution => _resolution.val;
+  set resolution(double? val) => _resolution.val = val;
 
-  int get width => _width.val;
-  set width(int val) => _width.val = val;
+  int? get width => _width.val;
+  set width(int? val) => _width.val = val;
 
-  int get height => _height.val;
-  set height(int val) => _height.val = val;
+  int? get height => _height.val;
+  set height(int? val) => _height.val = val;
 
   NavMsgsMapMetaData()
       : super('MapMetaData msg definition', 'nav_msgs/MapMetaData',

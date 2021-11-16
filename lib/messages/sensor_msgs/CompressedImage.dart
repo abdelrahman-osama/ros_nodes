@@ -10,13 +10,13 @@ class SensorMsgsCompressedImage extends RosMessage {
   final RosString _format = RosString();
   final RosUint8List _data = RosUint8List();
 
-  String get format => _format.val;
-  set format(String value) {
+  String? get format => _format.val;
+  set format(String? value) {
     _format.val = value;
   }
 
-  Uint8List get data => _data.list;
-  set frame_id(Uint8List value) {
+  Uint8List? get data => _data.list;
+  set frame_id(Uint8List? value) {
     _data.list = value;
   }
 

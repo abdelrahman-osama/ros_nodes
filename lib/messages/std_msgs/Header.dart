@@ -8,13 +8,13 @@ class StdMsgsHeader extends RosMessage {
   final RosTime stamp = RosTime();
   final RosString _frame_id = RosString();
 
-  int get seq => _seq.val;
-  set seq(int value) {
+  int? get seq => _seq.val;
+  set seq(int? value) {
     _seq.val = value;
   }
 
-  String get frame_id => _frame_id.val;
-  set frame_id(String value) {
+  String? get frame_id => _frame_id.val;
+  set frame_id(String? value) {
     _frame_id.val = value;
   }
 

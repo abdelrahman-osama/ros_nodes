@@ -4,7 +4,7 @@ import 'package:ros_nodes/src/ros_message.dart';
 class StdMsgsString extends RosMessage {
   final RosString _data = RosString();
 
-  String get data => _data.val;
+  String get data => _data.val!;
   set data(value) {
     _data.val = value;
   }

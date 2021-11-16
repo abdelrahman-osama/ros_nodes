@@ -2,10 +2,10 @@ import 'dart:typed_data';
 import 'package:ros_nodes/src/ros_message.dart';
 
 class RosFloat32 implements BinaryConvertable {
-  double val;
+  double? val;
 
-  RosFloat32({double value}) {
-    val = value ?? 0;
+  RosFloat32({double? value}) {
+    val = value;
   }
 
   @override
@@ -17,7 +17,7 @@ class RosFloat32 implements BinaryConvertable {
   @override
   List<int> toBytes() {
     var bytes = Uint8List(4);
-    ByteData.view(bytes.buffer).setFloat32(0, val, Endian.little);
+    ByteData.view(bytes.buffer).setFloat32(0, val!, Endian.little);
     return bytes;
   }
 

@@ -2,12 +2,12 @@ import 'dart:typed_data';
 import 'package:ros_nodes/src/ros_message.dart';
 
 class RosTime implements BinaryConvertable {
-  int sec;
-  int nsec;
+  int? sec;
+  int? nsec;
 
-  RosTime({int sec, int nsec}) {
-    this.sec = sec ?? 0;
-    this.nsec = nsec ?? 0;
+  RosTime({int? sec, int? nsec}) {
+    this.sec = sec;
+    this.nsec = nsec;
   }
 
   @override
@@ -20,8 +20,8 @@ class RosTime implements BinaryConvertable {
   @override
   List<int> toBytes() {
     var bytes = Uint8List(8);
-    ByteData.view(bytes.buffer).setUint32(0, sec, Endian.little);
-    ByteData.view(bytes.buffer).setUint32(4, nsec, Endian.little);
+    ByteData.view(bytes.buffer).setUint32(0, sec!, Endian.little);
+    ByteData.view(bytes.buffer).setUint32(4, nsec!, Endian.little);
     return bytes;
   }
 

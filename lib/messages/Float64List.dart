@@ -3,8 +3,8 @@ import 'dart:typed_data';
 import 'NativeList.dart';
 
 class RosFloat64List extends NativeList<Float64List> {
-  RosFloat64List({int fixedLength}) : super(fixedLength: fixedLength) {
-    list = Float64List(fixedLength ?? 0);
+  RosFloat64List({required int fixedLength}) : super(fixedLength: fixedLength) {
+    list = Float64List(fixedLength);
   }
 
   @override

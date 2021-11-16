@@ -7,8 +7,8 @@ import '../std_msgs/Header.dart';
 class NavMsgsOdometry extends RosMessage {
   final header = StdMsgsHeader();
   final _child_frame_id = RosString();
-  String get child_frame_id => _child_frame_id.val;
-  set child_frame_id(String val) => _child_frame_id.val = val;
+  String? get child_frame_id => _child_frame_id.val;
+  set child_frame_id(String? val) => _child_frame_id.val = val;
   final pose = PoseWithCovariance();
   final twist = GeometryMsgsTwistWithCovariance();
 

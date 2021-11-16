@@ -4,11 +4,11 @@ version: 0.1.0
 publish_to: none
 
 environment:
-  sdk: '>=2.7.0 <3.0.0'
+  sdk: '>=2.12.0 <3.0.0'
 
 dependencies:
   xmlrpc_server:
-    git: git://github.com/sashiri/xmlrpc_server.git
+    git: git://github.com/abdelrahman-osama/xmlrpc_server.git
 
 dev_dependencies:
   pedantic: ^1.8.0

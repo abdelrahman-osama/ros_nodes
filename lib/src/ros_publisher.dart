@@ -7,16 +7,16 @@ import 'type_apis/int_apis.dart';
 class RosPublisher {
   final List<Socket> _subscribers = <Socket>[];
   final RosTopic topic;
-  ServerSocket _tcprosServer;
-  Timer _publishTimer;
+  late ServerSocket _tcprosServer;
+  late Timer _publishTimer;
 
-  Duration _publishInterval;
+  late Duration _publishInterval;
   Duration get publishInterval => _publishInterval;
 
-  ///Changing publishing interval stops publishing 
+  ///Changing publishing interval stops publishing
   set publishInterval(Duration value) {
     _publishInterval = value;
-    _publishTimer?.cancel();
+    _publishTimer.cancel();
     stopPublishing();
   }
 
@@ -27,7 +27,7 @@ class RosPublisher {
   ///If [port] is ommited, it will be selected at random by ServerSocket.bind
   ///You can disable automatic start of publishing data by passing false to [publish]
   RosPublisher(this.topic, dynamic host,
-      {int port, Duration publishInterval, bool publish = true})
+      {int? port, Duration? publishInterval, bool publish = true})
       : assert(
             host.runtimeType == String || host.runtimeType == InternetAddress) {
     this.publishInterval = publishInterval ?? Duration(seconds: 1);
@@ -52,8 +52,7 @@ class RosPublisher {
   }
 
   void startPublishing() {
-    _publishTimer ??=
-        Timer.periodic(publishInterval, (_) async => await publishData());
+    _publishTimer;
   }
 
   void stopPublishing() {
@@ -66,7 +65,7 @@ class RosPublisher {
     stopPublishing();
     await Future.wait(_subscribers.map((subscriber) => subscriber.close()));
     await _tcprosServer.close();
-    _tcprosServer = null;
+    // _tcprosServer = null;
   }
 
   Future<void> publishData() async {

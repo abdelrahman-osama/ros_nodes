@@ -14,6 +14,7 @@ Future<void> main() async {
   await client.unsubscribe(topic);
 
   var subscriber = await client.subscribe(topic);
-  subscriber.onValueUpdate.listen((type) => print('Listener 1: ${type.data}'));
+  subscriber!.onValueUpdate
+      .listen((type) => print('Listener 1: ${type.params}'));
   subscriber.onValueUpdate.listen((_) => print('Listener 2: ${msg.data}'));
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:xmlrpc_server/xmlrpc_server.dart';
 import 'package:xml_rpc/client.dart' as xml_rpc;
+
 import 'package:xml/xml.dart';
 
 import 'ros_config.dart';
@@ -11,25 +12,25 @@ import 'ros_subscriber.dart';
 import 'protocol_info.dart';
 
 class RosClient {
-  final RosConfig config;
-  XmlRpcServer _server;
+  final RosConfig? config;
+  XmlRpcServer? _server;
 
   final Map<String, RosPublisher> _topicPublishers = {};
   final Map<String, RosSubscriber> _topicSubscribers = {};
 
   RosClient(this.config) {
-    _server = XmlRpcServer(host: config.host, port: config.port);
-    _server.bind('getBusStats', onGetBusStats);
-    _server.bind('getBusInfo', onGetBusInfo);
-    _server.bind('getMasterUri', onGetMasterUri);
-    _server.bind('shutdown', onShutdown);
-    _server.bind('getPid', onGetPid);
-    _server.bind('getSubscriptions', onGetSubscriptions);
-    _server.bind('getPublications', onGetPublications);
-    _server.bind('paramUpdate', onParamUpdate);
-    _server.bind('publisherUpdate', onPublisherUpdate);
-    _server.bind('requestTopic', onRequestTopic);
-    _server.startServer();
+    _server = XmlRpcServer(host: config!.host, port: config!.port);
+    _server!.bind('getBusStats', onGetBusStats);
+    _server!.bind('getBusInfo', onGetBusInfo);
+    _server!.bind('getMasterUri', onGetMasterUri);
+    _server!.bind('shutdown', onShutdown);
+    _server!.bind('getPid', onGetPid);
+    _server!.bind('getSubscriptions', onGetSubscriptions);
+    _server!.bind('getPublications', onGetPublications);
+    _server!.bind('paramUpdate', onParamUpdate);
+    _server!.bind('publisherUpdate', onPublisherUpdate);
+    _server!.bind('requestTopic', onRequestTopic);
+    _server!.startServer();
   }
 
   Future<void> close() async {
@@ -42,7 +43,7 @@ class RosClient {
             .timeout(Duration(seconds: 3), onTimeout: () => publisher.close()));
 
     await Future.wait([...subcribtionsToClose, ...publishersToClose]);
-    return _server.stopServer();
+    return _server!.stopServer();
   }
 
   Future<XmlDocument> onGetBusStats(List<dynamic> params) async {
@@ -94,7 +95,7 @@ class RosClient {
     }
 
     var sub = _topicSubscribers[topic];
-    var ignored = await sub.updatePublisherList(publishers);
+    var ignored = await sub!.updatePublisherList(publishers);
 
     return generateXmlResponse([
       [
@@ -144,8 +145,8 @@ class RosClient {
     return generateXmlResponse([
       [
         1,
-        'Node is connected to ${config.masterUri}',
-        config.masterUri,
+        'Node is connected to ${config!.masterUri}',
+        config!.masterUri,
       ]
     ]);
   }
@@ -169,7 +170,7 @@ class RosClient {
 
     final validProtocols = [];
     for (final protocol in protocols) {
-      if (publisher.validateProtocolSettings(protocol)) {
+      if (publisher!.validateProtocolSettings(protocol)) {
         validProtocols.add([protocol.name, publisher.address, publisher.port]);
       }
     }
@@ -187,22 +188,22 @@ class RosClient {
   }
 
   Future<RosPublisher> register(RosTopic topic,
-      {int port, Duration publishInterval}) async {
+      {int? port, Duration? publishInterval}) async {
     var publisher = RosPublisher(
       topic,
-      config.host,
+      config!.host,
       port: port,
       publishInterval: publishInterval,
     );
 
     final result = await xml_rpc.call(
-      config.masterUri,
+      Uri.parse(config!.masterUri),
       'registerPublisher',
       [
-        '/${config.name}',
+        '/${config!.name}',
         '/${topic.name}',
         '${topic.msg.message_type}',
-        'http://${_server.host}:${_server.port}/',
+        'http://${_server!.host}:${_server!.port}/',
       ],
     ).catchError((err) async {
       await publisher.close();
@@ -223,10 +224,11 @@ class RosClient {
   }
 
   Future<void> unregister(RosTopic topic) async {
-    final result = await xml_rpc.call(config.masterUri, 'unregisterPublisher', [
-      '/${config.name}',
+    final result = await xml_rpc
+        .call(Uri.parse(config!.masterUri), 'unregisterPublisher', [
+      '/${config!.name}',
       '/${topic.name}',
-      'http://${_server.host}:${_server.port}/',
+      'http://${_server!.host}:${_server!.port}/',
     ]);
 
     final int code = result[0];
@@ -242,24 +244,27 @@ class RosClient {
     }
 
     if (_topicPublishers.containsKey('/${topic.name}')) {
-      await _topicPublishers['/${topic.name}'].close();
+      await _topicPublishers['/${topic.name}']!.close();
       _topicPublishers.remove('/${topic.name}');
     }
   }
 
-  Future<RosSubscriber<Message>> subscribe<Message extends RosMessage>(
+  Future<RosSubscriber<RosMessage>?> subscribe<Message extends RosMessage>(
       RosTopic<Message> topic) async {
     if (_topicSubscribers.containsKey(topic.msg.message_type)) {
+      // help me pls
+      // Ret
       return _topicSubscribers[topic.msg.message_type];
     }
 
-    var sub = RosSubscriber<Message>(topic, config);
+    RosSubscriber<RosMessage> sub = RosSubscriber<Message>(topic, config!);
 
-    final result = await xml_rpc.call(config.masterUri, 'registerSubscriber', [
-      '/${config.name}',
+    final result =
+        await xml_rpc.call(Uri.parse(config!.masterUri), 'registerSubscriber', [
+      '/${config!.name}',
       '/${topic.name}',
       '${topic.msg.message_type}',
-      'http://${_server.host}:${_server.port}/'
+      'http://${_server!.host}:${_server!.port}/'
     ]);
 
     var code = result[0] as int;
@@ -276,11 +281,11 @@ class RosClient {
   }
 
   Future<void> unsubscribe(RosTopic topic) async {
-    final result =
-        await xml_rpc.call(config.masterUri, 'unregisterSubscriber', [
-      '/${config.name}',
+    final result = await xml_rpc
+        .call(Uri.parse(config!.masterUri), 'unregisterSubscriber', [
+      '/${config!.name}',
       '/${topic.name}',
-      'http://${_server.host}:${_server.port}/',
+      'http://${_server!.host}:${_server!.port}/',
     ]);
 
     var code = result[0] as int;

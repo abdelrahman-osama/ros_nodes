@@ -9,7 +9,7 @@ import 'Twist.dart';
 class GeometryMsgsTwistWithCovariance extends RosMessage {
   final twist = GeometryMsgsTwist();
   final _covariance = RosFloat64List(fixedLength: 36);
-  Float64List get covariance => _covariance.list;
+  Float64List? get covariance => _covariance.list;
 
   GeometryMsgsTwistWithCovariance()
       : super(

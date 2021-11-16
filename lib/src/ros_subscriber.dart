@@ -33,21 +33,21 @@ TcpHandShake decodeHeader(Uint8List header) {
 
 extension IterableExtension<T> on Iterable<T> {
   T firstOrNull() {
-    return firstWhere((_) => false, orElse: () => null);
+    return firstWhere((_) => false);
   }
 }
 
 class RosSubscriber<Message extends RosMessage> {
-  final Map<String, Socket> _connections = {};
-  StreamController<Message> _valueUpdate;
+  final Map<String, Socket>? _connections = {};
+  StreamController<Message>? _valueUpdate;
   RosConfig config;
 
   final RosTopic<Message> topic;
-  Stream<Message> onValueUpdate;
+  late Stream<Message> onValueUpdate;
 
   RosSubscriber(this.topic, this.config) {
     _valueUpdate = StreamController<Message>();
-    onValueUpdate = _valueUpdate.stream.asBroadcastStream();
+    onValueUpdate = _valueUpdate!.stream.asBroadcastStream();
   }
 
   List<int> _tcprosHeader() {
@@ -110,7 +110,7 @@ class RosSubscriber<Message extends RosMessage> {
 
         assert(usedbytes == size - 4);
 
-        _valueUpdate.add(topic.msg);
+        _valueUpdate!.add(topic.msg);
         recived -= size;
         size = 0;
       }
@@ -148,7 +148,7 @@ class RosSubscriber<Message extends RosMessage> {
   }
 
   Future<bool> updatePublisherList(List<String> publishers) async {
-    _connections.removeWhere((apiAddress, connection) {
+    _connections!.removeWhere((apiAddress, connection) {
       final connected = !publishers.contains(apiAddress);
       if (!connected) {
         connection.close();
@@ -165,7 +165,7 @@ class RosSubscriber<Message extends RosMessage> {
   Future<void> _connectWithPublisher(String connection) async {
     dynamic response;
     try {
-      response = await xml_rpc.call(connection, 'requestTopic', [
+      response = await xml_rpc.call(Uri.parse(connection), 'requestTopic', [
         '/${config.name}',
         '/${topic.name}',
         [
@@ -173,7 +173,7 @@ class RosSubscriber<Message extends RosMessage> {
         ]
       ]);
     } on SocketException catch (e) {
-      if (e.osError.errorCode == 1225) {
+      if (e.osError!.errorCode == 1225) {
         return;
       }
       rethrow;
@@ -188,20 +188,18 @@ class RosSubscriber<Message extends RosMessage> {
     final protocol =
         ProtocolInfo(response[2][0], (response[2] as List<dynamic>).sublist(1));
 
-    Socket socket;
+    Socket socket = await establishTCPROSConnection(protocol);
     switch (protocol.name) {
       case 'TCPROS':
         socket = await establishTCPROSConnection(protocol);
         break;
     }
 
-    assert(socket != null);
-
-    _connections.putIfAbsent(connection, () => socket);
+    _connections!.putIfAbsent(connection, () => socket);
   }
 
   Future<void> forceStop() {
-    return Future.wait(_connections.values.map((e) async {
+    return Future.wait(_connections!.values.map((e) async {
       await e.flush();
       return e.close();
     }));

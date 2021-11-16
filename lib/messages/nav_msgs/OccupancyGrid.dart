@@ -9,8 +9,8 @@ class NavMsgsOccupancyGrid extends RosMessage {
   var info = NavMsgsMapMetaData();
   final _data = RosInt8List();
 
-  Int8List get data => _data.list;
-  set data(Int8List list) => _data.list = list;
+  Int8List? get data => _data.list;
+  set data(Int8List? list) => _data.list = list;
 
   NavMsgsOccupancyGrid()
       : super('OccupancyGrid msg definition', 'nav_msgs/OccupancyGrid',

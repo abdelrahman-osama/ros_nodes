@@ -5,7 +5,7 @@ import 'package:ros_nodes/src/ros_message.dart';
 class TfTfMessage extends RosMessage {
   final _transforms = RosList(() => GeometryMsgsTransformStamped());
 
-  List<GeometryMsgsTransformStamped> get transforms => _transforms.list;
+  List<GeometryMsgsTransformStamped>? get transforms => _transforms.list;
 
   TfTfMessage()
       : super('transform stamped data', 'tf/tfMessage',

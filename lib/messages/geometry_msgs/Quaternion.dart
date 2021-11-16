@@ -7,23 +7,23 @@ class GeometryMsgsQuaternion extends RosMessage {
   final RosFloat64 _z = RosFloat64();
   final RosFloat64 _w = RosFloat64();
 
-  double get x => _x.val;
-  set x(double value) {
+  double? get x => _x.val;
+  set x(double? value) {
     _x.val = value;
   }
 
-  double get y => _y.val;
-  set y(double value) {
+  double? get y => _y.val;
+  set y(double? value) {
     _y.val = value;
   }
 
-  double get z => _z.val;
-  set z(double value) {
+  double? get z => _z.val;
+  set z(double? value) {
     _z.val = value;
   }
 
-  double get w => _w.val;
-  set w(double value) {
+  double? get w => _w.val;
+  set w(double? value) {
     _w.val = value;
   }
 
